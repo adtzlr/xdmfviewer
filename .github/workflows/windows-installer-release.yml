@@ -56,9 +56,20 @@ jobs:
           PRODUCT_VERSION: ${{ github.ref_name }}
         run: |
           $version = $env:PRODUCT_VERSION.TrimStart('v')
-          $appRoot = Join-Path $PWD.Path 'build\app\xdmfviewer'
-          $wxsPath = Join-Path $PWD.Path 'build\installer-generated.wxs'
+          $appRoot = Join-Path (Get-Location) 'build\app\xdmfviewer'
+          $wxsPath = Join-Path (Get-Location) 'build\installer-generated.wxs'
           New-Item -ItemType Directory -Force -Path dist | Out-Null
+          
+          Write-Host "=== Build Configuration ===" -ForegroundColor Cyan
+          Write-Host "Version: $version"
+          Write-Host "AppRoot: $appRoot"
+          Write-Host "WxsPath: $wxsPath"
+          Write-Host "AppRoot exists: $(Test-Path $appRoot)"
+          if (Test-Path $appRoot) {
+            $fileCount = @(Get-ChildItem -Path $appRoot -File -Recurse).Count
+            Write-Host "Files in AppRoot: $fileCount"
+            Get-ChildItem -Path $appRoot -File -Recurse | ForEach-Object { Write-Host "  $_" }
+          }
 
           function Get-ShortHash {
             param([string]$Text)
@@ -177,7 +188,8 @@ jobs:
             $componentId = New-Id -Prefix 'Cmp_' -Text $relativeFile
             $fileId = New-Id -Prefix 'File_' -Text $relativeFile
             $directoryId = $directoryIds[$parentDirectory]
-            $sourcePath = "`$(var.BuildOutput)\$relativeFile"
+            $sourcePathNormalized = $relativeFile.Replace('\', '/')
+            $sourcePath = "`$(var.BuildOutput)/$sourcePathNormalized"
 
             Add-Content -Path $wxsPath -Value "      <Component Id=`"$componentId`" Directory=`"$directoryId`" Guid=`"*`">" -Encoding utf8
             Add-Content -Path $wxsPath -Value "        <File Id=`"$fileId`" Source=`"$sourcePath`" KeyPath=`"yes`" />" -Encoding utf8
@@ -195,7 +207,11 @@ jobs:
           Add-Content -Path $wxsPath -Value '  </Fragment>' -Encoding utf8
           Add-Content -Path $wxsPath -Value '</Wix>' -Encoding utf8
 
-          $outputPath = Join-Path $PWD.Path "dist\xdmfviewer-windows-$version.msi"
+          Write-Host "=== Generated WXS File ===" -ForegroundColor Cyan
+          Get-Content -Path $wxsPath | Select-Object -First 50
+          Write-Host "... (file truncated for display)" -ForegroundColor Yellow
+
+          $outputPath = Join-Path (Get-Location) "dist\xdmfviewer-windows-$version.msi"
           .\.tools\wix.exe build `
             -acceptEula wix7 `
             $wxsPath `
@@ -203,8 +219,24 @@ jobs:
             -d ProductVersion=$version `
             -d BuildOutput=$appRoot `
             -out $outputPath
+          
+          Write-Host "=== Build Complete ===" -ForegroundColor Cyan
+          if (Test-Path $outputPath) {
+            $msiSize = (Get-Item $outputPath).Length / 1MB
+            Write-Host "MSI created: $outputPath"
+            Write-Host "MSI size: $($msiSize.ToString('F2')) MB"
+          } else {
+            Write-Host "ERROR: MSI not found at $outputPath" -ForegroundColor Red
+          }
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
           files: "dist/*.msi"
+
+      - name: Upload WXS for debugging
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wix-source
+          path: build/installer-generated.wxs
