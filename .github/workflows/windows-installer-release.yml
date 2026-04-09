@@ -129,43 +129,43 @@ jobs:
             }
           }
 
-          @'
-<?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
-  <Package
-    Name="xdmfviewer"
-    Manufacturer="xdmfviewer contributors"
-    Version="$(var.ProductVersion)"
-    UpgradeCode="8c4bc4cb-7d6a-4d7b-a565-29f6f8f3a8a5"
-    Scope="perUser"
-    Compressed="yes">
-    <MajorUpgrade DowngradeErrorMessage="Eine neuere Version von xdmfviewer ist bereits installiert." />
-    <MediaTemplate />
-
-    <Feature Id="MainFeature" Title="xdmfviewer" Level="1">
-      <ComponentGroupRef Id="ApplicationComponents" />
-    </Feature>
-  </Package>
-
-  <Fragment>
-    <StandardDirectory Id="LocalAppDataFolder">
-      <Directory Id="INSTALLFOLDER" Name="xdmfviewer">
-'@ | Set-Content -Path $wxsPath -Encoding utf8
+          @(
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">'
+            '  <Package'
+            '    Name="xdmfviewer"'
+            '    Manufacturer="xdmfviewer contributors"'
+            '    Version="$(var.ProductVersion)"'
+            '    UpgradeCode="8c4bc4cb-7d6a-4d7b-a565-29f6f8f3a8a5"'
+            '    Scope="perUser"'
+            '    Compressed="yes">'
+            '    <MajorUpgrade DowngradeErrorMessage="A newer version of xdmfviewer is already installed." />'
+            '    <MediaTemplate />'
+            ''
+            '    <Feature Id="MainFeature" Title="xdmfviewer" Level="1">'
+            '      <ComponentGroupRef Id="ApplicationComponents" />'
+            '    </Feature>'
+            '  </Package>'
+            ''
+            '  <Fragment>'
+            '    <StandardDirectory Id="LocalAppDataFolder">'
+            '      <Directory Id="INSTALLFOLDER" Name="xdmfviewer">'
+          ) | Set-Content -Path $wxsPath -Encoding utf8
 
           Write-DirectoryTree -RelativePath '' -Indent 8
 
-          @'
-      </Directory>
-    </StandardDirectory>
-
-    <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="ApplicationProgramsFolder" Name="xdmfviewer" />
-    </StandardDirectory>
-  </Fragment>
-
-  <Fragment>
-    <ComponentGroup Id="ApplicationComponents" Directory="INSTALLFOLDER">
-'@ | Add-Content -Path $wxsPath -Encoding utf8
+          @(
+            '      </Directory>'
+            '    </StandardDirectory>'
+            ''
+            '    <StandardDirectory Id="ProgramMenuFolder">'
+            '      <Directory Id="ApplicationProgramsFolder" Name="xdmfviewer" />'
+            '    </StandardDirectory>'
+            '  </Fragment>'
+            ''
+            '  <Fragment>'
+            '    <ComponentGroup Id="ApplicationComponents" Directory="INSTALLFOLDER">'
+          ) | Add-Content -Path $wxsPath -Encoding utf8
 
           foreach ($file in $allFiles) {
             $relativeFile = Get-RelativePath -FullPath $file.FullName
@@ -205,4 +205,4 @@ jobs:
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.msi
+          files: "dist/*.msi"
