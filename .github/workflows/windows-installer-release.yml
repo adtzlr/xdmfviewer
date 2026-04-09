@@ -196,6 +196,7 @@ jobs:
           Add-Content -Path $wxsPath -Value '</Wix>' -Encoding utf8
 
           .\.tools\wix.exe build `
+            -acceptEula wix7 `
             $wxsPath `
             -arch x64 `
             -d ProductVersion=$version `
