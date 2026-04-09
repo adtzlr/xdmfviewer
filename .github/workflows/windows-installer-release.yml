@@ -195,13 +195,14 @@ jobs:
           Add-Content -Path $wxsPath -Value '  </Fragment>' -Encoding utf8
           Add-Content -Path $wxsPath -Value '</Wix>' -Encoding utf8
 
+          $outputPath = Join-Path $PWD.Path "dist\xdmfviewer-windows-$version.msi"
           .\.tools\wix.exe build `
             -acceptEula wix7 `
             $wxsPath `
             -arch x64 `
             -d ProductVersion=$version `
             -d BuildOutput=$appRoot `
-            -out $($PWD.Path)\dist\xdmfviewer-windows-$version.msi
+            -out $outputPath
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
