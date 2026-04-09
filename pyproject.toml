@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xdmfviewer"
+version = "0.1.0"
+description = "Standalone PyVista/Qt viewer for XDMF result files"
+readme = "README.md"
+license = { text = "LGPL-3.0-or-later" }
+requires-python = ">=3.10"
+authors = [
+  { name = "xdmfviewer contributors" }
+]
+keywords = ["xdmf", "pyvista", "viewer", "qt", "fem"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Visualization"
+]
+dependencies = [
+  "numpy>=1.22",
+  "pyvista>=0.43",
+  "pyvistaqt>=0.11",
+  "qtpy>=2.4"
+]
+
+[project.optional-dependencies]
+qt = [
+  "PySide6>=6.5"
+]
+dev = [
+  "pytest>=8.0"
+]
+
+[project.scripts]
+xdmfviewer = "xdmfviewer.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/xdmfviewer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
