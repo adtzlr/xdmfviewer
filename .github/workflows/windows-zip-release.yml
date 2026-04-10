@@ -39,11 +39,32 @@ jobs:
             --workpath build\pyinstaller `
             --specpath build\spec `
             --paths src `
-            --collect-all pyvista `
-            --collect-all pyvistaqt `
-            --collect-all qtpy `
-            --collect-submodules vtkmodules `
+            --collect-data pyvista `
+            --collect-data pyvistaqt `
+            --collect-data qtpy `
+            --exclude-module PyQt5 `
+            --exclude-module PyQt6 `
+            --exclude-module trame `
+            --exclude-module trame_client `
+            --exclude-module trame_server `
+            --exclude-module trame_vtk `
+            --exclude-module trame_vuetify `
             src/xdmfviewer/__main__.py
+
+      - name: Verify build output
+        shell: pwsh
+        run: |
+          $appExe = Join-Path (Get-Location) 'build\app\xdmfviewer\xdmfviewer.exe'
+          if (-not (Test-Path $appExe)) {
+            throw "Expected executable not found: $appExe"
+          }
+
+          $appRoot = Split-Path $appExe -Parent
+          $fileCount = @(Get-ChildItem -Path $appRoot -File -Recurse).Count
+          $folderSizeMb = (@(Get-ChildItem -Path $appRoot -File -Recurse | Measure-Object -Property Length -Sum).Sum) / 1MB
+          Write-Host "Executable found: $appExe"
+          Write-Host "Bundled file count: $fileCount"
+          Write-Host "Bundle size: $($folderSizeMb.ToString('F2')) MB"
 
       - name: Create ZIP package
         shell: pwsh
