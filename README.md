@@ -32,9 +32,9 @@ pip install --editable ".[qt,dev]"
 
 ### Windows release
 
-Tagged releases publish a per-user MSI installer as a GitHub release asset.
-Download the `.msi` file from the release page and run it normally; it installs
-into your user profile.
+Tagged releases publish a ZIP archive as a GitHub release asset.
+Download the `.zip` file from the release page, extract it, and start
+`xdmfviewer.exe` from the extracted folder.
 
 The release workflow is triggered by version tags such as `v0.1.0`.
 
