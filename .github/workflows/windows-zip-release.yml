@@ -44,6 +44,11 @@ jobs:
             --collect-data qtpy `
             --exclude-module PyQt5 `
             --exclude-module PyQt6 `
+            --exclude-module IPython `
+            --exclude-module ipywidgets `
+            --exclude-module jupyter `
+            --exclude-module notebook `
+            --exclude-module panel `
             --exclude-module trame `
             --exclude-module trame_client `
             --exclude-module trame_server `
@@ -84,10 +89,15 @@ jobs:
             Remove-Item -Path $outputPath -Force
           }
 
-          Compress-Archive `
-            -Path (Join-Path $appRoot '*') `
-            -DestinationPath $outputPath `
-            -CompressionLevel Optimal
+          $sevenZip = (Get-Command 7z.exe -ErrorAction SilentlyContinue)
+          if ($null -ne $sevenZip) {
+            & $sevenZip.Source a -tzip -mx=9 $outputPath (Join-Path $appRoot '*') | Out-Host
+          } else {
+            Compress-Archive `
+              -Path (Join-Path $appRoot '*') `
+              -DestinationPath $outputPath `
+              -CompressionLevel Optimal
+          }
 
           $zipSize = (Get-Item $outputPath).Length / 1MB
           Write-Host "ZIP created: $outputPath"
