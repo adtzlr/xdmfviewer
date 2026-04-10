@@ -4,7 +4,7 @@ A standalone desktop viewer for XDMF time-series results based on PyVista and Qt
 
 ## Features
 
-<img height="600" alt="Image" src="https://github.com/user-attachments/assets/0fac020d-9c02-44f7-8878-a1ee25342bfa" />
+<video src="https://github.com/user-attachments/assets/621a77e2-c160-4be3-a67b-ecdaabe35109" width="100%" controls></video>
 
 - Interactive visualization of XDMF time steps
 - Point and cell field selection
