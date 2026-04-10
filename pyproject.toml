@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xdmfviewer"
-version = "0.1.4"
+dynamic = ["version"]
 description = "Standalone PyVista/Qt viewer for XDMF result files"
 readme = "README.md"
 license = { text = "LGPL-3.0-or-later" }
@@ -44,6 +44,9 @@ xdmfviewer = "xdmfviewer.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/xdmfviewer"]
+
+[tool.hatch.version]
+path = "src/xdmfviewer/version.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
