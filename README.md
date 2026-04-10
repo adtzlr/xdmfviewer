@@ -25,9 +25,9 @@ pip install xdmfviewer[qt]
 For development, clone the repository and install in editable mode:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/adtzlr/xdmfviewer.git
 cd xdmfviewer
-pip install -e ".[qt,dev]"
+pip install --editable ".[qt,dev]"
 ```
 
 ### Windows release
